@@ -1,0 +1,236 @@
+Chameleon Zope page templates
+=============================
+
+Chameleon provides support for Zope page templates which can be used
+from grok writing templates with the ``.cpt`` (=Chameleon Page
+Template) filename extension.
+
+Chameleon page templates differ from standard Zope page templates in a
+few aspects, most notably:
+
+* Expressions are parsed in ``Python-mode`` by default. This means,
+  instead of ``tal:content="view/value"`` you must use
+  ``tal:content="view.value"``. Every occurence of TAL-expressions
+  starting with ``python:`` now can be shortened by skipping this
+  marker.
+
+* Also genshi-like variable substitutions are supported. For example
+  you can write ``${myvar}`` instead of ``tal:content="myvar"``.
+
+Beside this, most rules for regular Zope page templates apply also to
+chameleon page templates.
+
+See the `Chameleon`_ page for more information.
+
+.. _Chameleon: http://chameleon.repoze.org/docs/latest/zpt.html
+
+Prerequisites
+-------------
+
+    >>> class Mammoth(object):
+    ...     __name__ = None
+
+
+Before we can see the templates in action, we care for correct
+registration and set some used variables:
+
+    >>> import os
+    >>> testdir = os.path.dirname(__file__)
+    >>> template_dir = os.path.join(testdir, 'zpt')
+
+We create a mammoth, which should provide us a bunch of chameleon page
+template driven views and put it in the database to setup location
+info::
+
+    >>> manfred = Mammoth()
+    >>> manfred.__name__ = "manfred"
+
+    >>> class View(object):
+    ...     def __init__(self, context):
+    ...         self.context = context
+    ...
+    ...     def namespace(self):
+    ...         return {'view': self,
+    ...                 'context': self.context}
+
+    >>> view = View(manfred)
+
+Simple templates
+----------------
+
+We prepared a plain cavepainting view. The template looks like this:
+
+    >>> cavepainting_zpt = os.path.join(template_dir, 'cavepainting.zpt')
+    >>> print open(cavepainting_zpt, 'rb').read()
+    <html>
+      <body>
+        A cave painting.
+      </body>
+    </html>
+
+The rendered view looks like this:
+
+    >>> from dolmen.template.components import PageTemplate
+    >>> template = PageTemplate(filename=cavepainting_zpt)
+
+    >>> print template.render(view)
+    <html>
+      <body>
+        A cave painting.
+      </body>
+    </html>
+
+Substituting variables
+----------------------
+
+A template can access variables like ``view``, ``context`` and its
+methods and attributes. The ``food`` view does exactly this. The
+template looks like this:
+
+    >>> food_zpt = os.path.join(template_dir, 'food.zpt')
+    >>> print open(food_zpt, 'rb').read()
+    <html>
+      <body>
+        <span tal:define="foo 'a FOO'">
+          <span tal:replace="structure view.__class__.__name__" />
+          My context is: ${context}
+          ${foo}
+          <span tal:replace="foo" />
+        </span>
+      </body>
+    </html>
+
+The rendered view looks like this:
+
+    >>> template = PageTemplate(filename=food_zpt)
+    >>> print template.render(view)
+    <html>
+      <body>
+        <span>
+          View
+          My context is: &lt;dolmen.template.tests.Mammoth object at ...&gt;
+          a FOO
+          a FOO
+        </span>
+      </body>
+    </html>
+
+
+Inline Templates
+----------------
+
+We can also define inline templates like this::
+
+  >>> from dolmen.template import components
+  >>> inline = components.PageTemplate(string=
+  ...       "<html><body>ME GROK HAS INLINES! ${view.__class__.__name__}"
+  ...       "</body></html>")
+
+If we render this view we get:
+
+   >>> print inline.render(view)
+   <html><body>ME GROK HAS INLINES! View</body></html>
+
+
+Macros
+------
+
+With ``dolmen.template`` we can also use macros, although it is a bit
+different from regular Zope page templates.
+
+We can define macros like this:
+
+    >>> zpt_file = os.path.join(template_dir, 'macromaster.zpt')
+    >>> print open(zpt_file, 'rb').read()
+    <p xmlns:metal="http://xml.zope.org/namespaces/metal"
+       metal:define-macro="hello">
+      Hello from <b metal:define-slot="name">macro master</b>
+    </p>
+
+The defined macro ``hello`` can be rendered in another Chameleon
+template with the METAL attribute ``use-macro``.
+
+To refer to a local macro, i.e. a macros defined in the same template,
+you can use something like::
+
+  <div metal:use-macro="template.macros['<macro-name>']">
+    Replaced by macro
+  </div>
+
+where ``<macro-name>`` must be an existing macro name.
+
+    >>> zpt_file = os.path.join(template_dir, 'macrouser.zpt')
+    >>> print open(zpt_file, 'rb').read()
+    <html xmlns:metal="http://xml.zope.org/namespaces/metal">
+    <body>
+      <p metal:define-macro="hello">
+        Hi there from macro user!
+      </p>
+      <div metal:use-macro="template.macros['hello']">
+        Fill this
+      </div>
+    <BLANKLINE>
+      <div metal:use-macro="load(filename='macromaster.zpt').macros['hello']">
+        <b metal:fill-slot="name">user slot</b>
+        Fill this too
+      </div>
+    </body>
+    </html>
+
+When rendered also the slot defined in the master template is filled
+by macro user content:
+
+    >>> from chameleon.loader import TemplateLoader
+    >>> from dolmen.template.components import PageTemplate
+    >>> loader = TemplateLoader(template_dir)
+    >>> load = loader.bind(PageTemplate)
+
+    >>> zpt_file = os.path.join(template_dir, 'macrouser.zpt')
+    >>> template = PageTemplate(filename=zpt_file)
+
+    >>> print template.render(view, **{'load': load})
+    <html>
+    <body>
+      <p>
+        Hi there from macro user!
+      </p>
+      <p>
+        Hi there from macro user!
+      </p>
+    <BLANKLINE>
+    <BLANKLINE>
+      <p>
+      Hello from <b>user slot</b>
+    <BLANKLINE>
+    </p>
+    </body>
+    </html>
+
+
+Text templates
+--------------
+
+Text templates are supported. We have a template that looks like so:
+
+    >>> hunter = os.path.join(template_dir, 'hunter.txt')
+    >>> print open(hunter, 'rb').read()
+    ME GROK HUNT ${animal}!
+
+If we render it, all expressions are substituted:
+
+    >>> from dolmen.template.components import PageTextTemplate
+    >>> template = PageTextTemplate(hunter)
+    >>> print template.render(view, **{'animal': u"MAMMOTH"})
+    ME GROK HUNT MAMMOTH!
+
+
+Differences from regular Zope page templates
+--------------------------------------------
+
+* Macros are referenced differently. See appropriate section above.
+
+* Expressions are parsed in ``Python-mode`` by default. This means,
+  instead of ``tal:content="view/value"`` you must use
+  ``tal:content="view.value"``. Every occurence of TAL-expressions
+  starting with ``python:`` now can be shortened by skipping this
+  marker.

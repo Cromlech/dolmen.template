@@ -1,0 +1,10 @@
+<html>
+  <body>
+    <span tal:define="foo 'a FOO'">
+      <span tal:replace="structure view.__class__.__name__" />
+      My context is: ${context}
+      ${foo}
+      <span tal:replace="foo" />
+    </span>
+  </body>
+</html>
