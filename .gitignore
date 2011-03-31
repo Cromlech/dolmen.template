@@ -30,3 +30,6 @@ dist/
 *.svn
 *.rej
 *.egg-info
+
+/.mr.developer.cfg
+/.installed.cfg

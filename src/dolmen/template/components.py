@@ -9,7 +9,7 @@ class Template(object):
     """Any sort of page template
     """
 
-    def __init__(self, filename=None, string=None, _prefix=None):
+    def __init__(self, filename=None, string=None, _prefix=''):
 
         self.__grok_module__ = martian.util.caller_module()
 
@@ -43,7 +43,7 @@ class PageTemplate(Template):
     def setFromString(self, string):
         self._template = template.PageTemplate(string)
 
-    def setFromFilename(self, filename, _prefix=None):
+    def setFromFilename(self, filename, _prefix=''):
         self._template = template.PageTemplateFile(
             os.path.join(_prefix, filename))
 
@@ -76,7 +76,7 @@ class PageTextTemplate(Template):
     def setFromString(self, string):
         self._template = template.PageTextTemplate(string)
 
-    def setFromFilename(self, filename, _prefix=None):
+    def setFromFilename(self, filename, _prefix=''):
         self._template = template.PageTextTemplateFile(
             os.path.join(_prefix, filename))
 
