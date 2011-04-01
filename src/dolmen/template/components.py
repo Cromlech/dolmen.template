@@ -38,14 +38,21 @@ class Template(object):
         return namespace
 
 
-class PageTemplate(Template):
+class TALPageTemplate(Template):
+    def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
+        self.mode = mode
+        super(TALPageTemplate, self).__init__(filename, string, _prefix)
 
     def setFromString(self, string):
-        self._template = template.PageTemplate(string)
+        factory = { 'xml'  : template.PageTemplate,
+                    'text' : template.PageTextTemplate }
+        self._template = factory[self.mode](string)
 
     def setFromFilename(self, filename, _prefix=''):
-        self._template = template.PageTemplateFile(
-            os.path.join(_prefix, filename))
+        factory = { 'xml'  : template.PageTemplateFile,
+                    'text' : template.PageTextTemplateFile }
+        path = os.path.join(_prefix, filename)
+        self._template = factory[self.mode](path)
 
     def namespace(self, view):
         """Extend namespace.
@@ -54,31 +61,13 @@ class PageTemplate(Template):
         some vars and functions to be more compatible with official
         ZPTs.
         """
-        namespace = super(PageTemplate, self).namespace(view)
+        namespace = super(TALPageTemplate, self).namespace(view)
         namespace.update(dict(template=self, nothing=None))
         return namespace
 
     @property
     def macros(self):
         return self._template.macros
-
-    def render(self, view, **extra):
-        if extra:
-            namespace = {}
-            namespace.update(self.namespace(view))
-            namespace.update(extra)
-            return self._template.render(**namespace)
-        return self._template.render(**self.namespace(view))
-
-
-class PageTextTemplate(Template):
-
-    def setFromString(self, string):
-        self._template = template.PageTextTemplate(string)
-
-    def setFromFilename(self, filename, _prefix=''):
-        self._template = template.PageTextTemplateFile(
-            os.path.join(_prefix, filename))
 
     def render(self, view, **extra):
         if extra:
