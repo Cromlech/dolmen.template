@@ -11,3 +11,5 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+
+from dolmen.template.components import Template, TALTemplate

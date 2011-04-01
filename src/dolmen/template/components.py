@@ -38,10 +38,10 @@ class Template(object):
         return namespace
 
 
-class TALPageTemplate(Template):
+class TALTemplate(Template):
     def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
         self.mode = mode
-        super(TALPageTemplate, self).__init__(filename, string, _prefix)
+        super(TALTemplate, self).__init__(filename, string, _prefix)
 
     def setFromString(self, string):
         factory = { 'xml'  : template.PageTemplate,
@@ -61,7 +61,7 @@ class TALPageTemplate(Template):
         some vars and functions to be more compatible with official
         ZPTs.
         """
-        namespace = super(TALPageTemplate, self).namespace(view)
+        namespace = super(TALTemplate, self).namespace(view)
         namespace.update(dict(template=self, nothing=None))
         return namespace
 

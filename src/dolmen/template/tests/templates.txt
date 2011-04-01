@@ -70,8 +70,8 @@ We prepared a plain cavepainting view. The template looks like this:
 
 The rendered view looks like this:
 
-    >>> from dolmen.template.components import TALPageTemplate
-    >>> template = TALPageTemplate(filename=cavepainting_zpt)
+    >>> from dolmen.template.components import TALTemplate
+    >>> template = TALTemplate(filename=cavepainting_zpt)
 
     >>> print template.render(view)
     <html>
@@ -102,7 +102,7 @@ template looks like this:
 
 The rendered view looks like this:
 
-    >>> template = TALPageTemplate(filename=food_zpt)
+    >>> template = TALTemplate(filename=food_zpt)
     >>> print template.render(view)
     <html>
       <body>
@@ -122,7 +122,7 @@ Inline Templates
 We can also define inline templates like this::
 
   >>> from dolmen.template import components
-  >>> inline = components.TALPageTemplate(string=
+  >>> inline = components.TALTemplate(string=
   ...       "<html><body>ME GROK HAS INLINES! ${view.__class__.__name__}"
   ...       "</body></html>")
 
@@ -181,12 +181,12 @@ When rendered also the slot defined in the master template is filled
 by macro user content:
 
     >>> from chameleon.loader import TemplateLoader
-    >>> from dolmen.template.components import TALPageTemplate
+    >>> from dolmen.template.components import TALTemplate
     >>> loader = TemplateLoader(template_dir)
-    >>> load = loader.bind(TALPageTemplate)
+    >>> load = loader.bind(TALTemplate)
 
     >>> zpt_file = os.path.join(template_dir, 'macrouser.zpt')
-    >>> template = TALPageTemplate(filename=zpt_file)
+    >>> template = TALTemplate(filename=zpt_file)
 
     >>> print template.render(view, **{'load': load})
     <html>
@@ -218,8 +218,8 @@ Text templates are supported. We have a template that looks like so:
 
 If we render it, all expressions are substituted:
 
-    >>> from dolmen.template.components import TALPageTemplate
-    >>> template = TALPageTemplate(hunter, mode = 'text')
+    >>> from dolmen.template.components import TALTemplate
+    >>> template = TALTemplate(hunter, mode = 'text')
     >>> print template.render(view, **{'animal': u"MAMMOTH"})
     ME GROK HUNT MAMMOTH!
 
