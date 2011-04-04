@@ -38,21 +38,33 @@ class Template(object):
         return namespace
 
 
+def build_template(factory, arg, tales):
+    types = {}
+    types.update(tales)
+    types.update(factory.expression_types)
+    return factory(arg, **{'expression_types': types})
+
+
 class TALTemplate(Template):
+
+    expression_types = {}
+    
     def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
         self.mode = mode
-        super(TALTemplate, self).__init__(filename, string, _prefix)
+        Template.__init__(self, filename, string, _prefix)
 
     def setFromString(self, string):
-        factory = { 'xml'  : template.PageTemplate,
+        factories = { 'xml'  : template.PageTemplate,
                     'text' : template.PageTextTemplate }
-        self._template = factory[self.mode](string)
+        self._template = build_template(
+            factories[self.mode], string, self.expression_types)
 
     def setFromFilename(self, filename, _prefix=''):
-        factory = { 'xml'  : template.PageTemplateFile,
+        factories = { 'xml'  : template.PageTemplateFile,
                     'text' : template.PageTextTemplateFile }
         path = os.path.join(_prefix, filename)
-        self._template = factory[self.mode](path)
+        self._template = build_template(
+            factories[self.mode], path, self.expression_types)
 
     def namespace(self, view):
         """Extend namespace.
@@ -64,10 +76,6 @@ class TALTemplate(Template):
         namespace = super(TALTemplate, self).namespace(view)
         namespace.update(dict(template=self, nothing=None))
         return namespace
-
-    @property
-    def macros(self):
-        return self._template.macros
 
     def render(self, view, **extra):
         if extra:
