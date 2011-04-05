@@ -2,6 +2,7 @@
 
 import os
 import martian
+from dolmen.template import extra_tales
 from chameleon.zpt import template
 
 
@@ -47,7 +48,7 @@ def build_template(factory, arg, tales):
 
 class TALTemplate(Template):
 
-    expression_types = {}
+    expression_types = extra_tales
     
     def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
         self.mode = mode

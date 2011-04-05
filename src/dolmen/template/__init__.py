@@ -1,15 +1,17 @@
-##############################################################################
-#
-# Copyright (c) 2006-2007 Zope Foundation and Contributors.
-# All Rights Reserved.
-#
-# This software is subject to the provisions of the Zope Public License,
-# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
-# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
-# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE.
-#
-##############################################################################
+# -*- coding: utf-8 -*-
 
+# Tales registry
+def list_tales():
+    from pkg_resources import iter_entry_points
+    extra_tales = {}
+    for ept in iter_entry_points(group='chameleon.tales'):
+        if ept.name in extra_tales:
+            raise KeyError(
+                'TALES name %r is defined more than once' % ept.name)
+        extra_tales[ept.name] = ept.load()
+    return extra_tales
+
+extra_tales = list_tales()
+
+# Exposing public API
 from dolmen.template.components import Template, TALTemplate
