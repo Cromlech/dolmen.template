@@ -1,9 +1,7 @@
 Chameleon Zope page templates
 =============================
 
-Chameleon provides support for Zope page templates which can be used
-from grok writing templates with the ``.cpt`` (=Chameleon Page
-Template) filename extension.
+Chameleon provides support for Zope page templates.
 
 Chameleon page templates differ from standard Zope page templates in a
 few aspects, most notably:
@@ -58,6 +56,14 @@ info::
 Simple templates
 ----------------
 
+TALTemplate offers a base implementation for templates.
+
+    >>> from dolmen.template.components import TALTemplate
+    >>> from cromlech.browser import ITemplate
+    >>> from zope.interface.verify import verifyClass 
+    >>> verifyClass(ITemplate, TALTemplate)
+    True
+
 We prepared a plain cavepainting view. The template looks like this:
 
     >>> cavepainting_zpt = os.path.join(template_dir, 'cavepainting.zpt')
@@ -70,7 +76,6 @@ We prepared a plain cavepainting view. The template looks like this:
 
 The rendered view looks like this:
 
-    >>> from dolmen.template.components import TALTemplate
     >>> template = TALTemplate(filename=cavepainting_zpt)
 
     >>> print template.render(view)
@@ -121,8 +126,7 @@ Inline Templates
 
 We can also define inline templates like this::
 
-  >>> from dolmen.template import components
-  >>> inline = components.TALTemplate(string=
+  >>> inline = TALTemplate(string=
   ...       "<html><body>ME GROK HAS INLINES! ${view.__class__.__name__}"
   ...       "</body></html>")
 

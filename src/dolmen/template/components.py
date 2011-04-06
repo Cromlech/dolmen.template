@@ -3,11 +3,13 @@
 import os
 import martian
 from dolmen.template import extra_tales
+from cromlech.browser import ITemplate
+from zope.interface import implements
 from chameleon.zpt import template
 
 
 class Template(object):
-    """Any sort of page template
+    """Base class for any sort of page template
     """
 
     def __init__(self, filename=None, string=None, _prefix=''):
@@ -48,21 +50,23 @@ def build_template(factory, arg, tales):
 
 class TALTemplate(Template):
 
+    implements(ITemplate)
+
     expression_types = extra_tales
-    
+
     def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
         self.mode = mode
         Template.__init__(self, filename, string, _prefix)
 
     def setFromString(self, string):
-        factories = { 'xml'  : template.PageTemplate,
-                    'text' : template.PageTextTemplate }
+        factories = {'xml': template.PageTemplate,
+                    'text': template.PageTextTemplate}
         self._template = build_template(
             factories[self.mode], string, self.expression_types)
 
     def setFromFilename(self, filename, _prefix=''):
-        factories = { 'xml'  : template.PageTemplateFile,
-                    'text' : template.PageTextTemplateFile }
+        factories = {'xml': template.PageTemplateFile,
+                    'text': template.PageTextTemplateFile}
         path = os.path.join(_prefix, filename)
         self._template = build_template(
             factories[self.mode], path, self.expression_types)

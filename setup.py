@@ -3,6 +3,7 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
     return open(
         os.path.join(
@@ -14,6 +15,7 @@ long_description = read('README.txt') + '\n' + read('CHANGES.txt')
 
 install_requires = [
     'setuptools',
+    'cromlech.browser',
     'martian',
     'Chameleon>=2.0rc7',
     ]
