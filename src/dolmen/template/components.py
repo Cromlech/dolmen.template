@@ -89,3 +89,9 @@ class TALTemplate(Template):
             namespace.update(extra)
             return self._template.render(**namespace)
         return self._template.render(**self.namespace(view))
+
+
+# TODO : we can have a @template decorateur to declare a template for a view
+# template(template = ITemplate, request= IRequest, context=Interface)
+# which does the same as @adapter(context, request) + @implementer(template) )
+# eg. in dolmen.menu.components
