@@ -2,7 +2,6 @@
 
 import os
 import sys
-import martian
 from dolmen.template import extra_tales
 from cromlech.browser import ITemplate
 from zope.interface import implements
@@ -15,8 +14,6 @@ class Template(object):
 
     def __init__(self, filename=None, string=None, _prefix=''):
 
-        self.__grok_module__ = martian.util.caller_module()
-
         if not (string is None) ^ (filename is None):
             raise AssertionError(
                 "You must pass in template or filename, but not both.")
@@ -24,9 +21,6 @@ class Template(object):
         if string:
             self.setFromString(string)
         else:
-            if not os.path.isabs(filename):
-                module = sys.modules[self.__grok_module__]
-                _prefix = os.path.dirname(module.__file__)
             self.setFromFilename(filename, _prefix)
 
     def __repr__(self):
