@@ -33,8 +33,7 @@ Before we can see the templates in action, we care for correct
 registration and set some used variables:
 
     >>> import os
-    >>> testdir = os.path.dirname(__file__)
-    >>> template_dir = os.path.join(testdir, 'zpt')
+    >>> from dolmen.template.tests import template_dir
 
 We create a mammoth, which should provide us a bunch of chameleon page
 template driven views and put it in the database to setup location
@@ -68,6 +67,7 @@ We prepared a plain cavepainting view. The template looks like this:
 
     >>> cavepainting_zpt = os.path.join(template_dir, 'cavepainting.zpt')
     >>> print open(cavepainting_zpt, 'rb').read()
+    ... #doctest: +NORMALIZE_WHITESPACE
     <html>
       <body>
         A cave painting.
@@ -79,11 +79,13 @@ The rendered view looks like this:
     >>> template = TALTemplate(filename=cavepainting_zpt)
 
     >>> print template.render(view)
+    ... #doctest: +NORMALIZE_WHITESPACE
     <html>
       <body>
         A cave painting.
       </body>
     </html>
+
 
 Substituting variables
 ----------------------
@@ -94,11 +96,12 @@ template looks like this:
 
     >>> food_zpt = os.path.join(template_dir, 'food.zpt')
     >>> print open(food_zpt, 'rb').read()
+    ... #doctest: +NORMALIZE_WHITESPACE
     <html>
       <body>
         <span tal:define="foo 'a FOO'">
           <span tal:replace="structure view.__class__.__name__" />
-          My context is: ${context}
+          My context is: ${context.__class__}
           ${foo}
           <span tal:replace="foo" />
         </span>
@@ -109,11 +112,12 @@ The rendered view looks like this:
 
     >>> template = TALTemplate(filename=food_zpt)
     >>> print template.render(view)
+    ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     <html>
       <body>
         <span>
           View
-          My context is: &lt;dolmen.template.tests.Mammoth object at ...&gt;
+          My context is: &lt;class '__main__.Mammoth'&gt;
           a FOO
           a FOO
         </span>
@@ -146,6 +150,7 @@ We can define macros like this:
 
     >>> zpt_file = os.path.join(template_dir, 'macromaster.zpt')
     >>> print open(zpt_file, 'rb').read()
+    ... #doctest: +NORMALIZE_WHITESPACE
     <p xmlns:metal="http://xml.zope.org/namespaces/metal"
        metal:define-macro="hello">
       Hello from <b metal:define-slot="name">macro master</b>
@@ -165,6 +170,7 @@ where ``<macro-name>`` must be an existing macro name.
 
     >>> zpt_file = os.path.join(template_dir, 'macrouser.zpt')
     >>> print open(zpt_file, 'rb').read()
+    ... #doctest: +NORMALIZE_WHITESPACE
     <html xmlns:metal="http://xml.zope.org/namespaces/metal">
     <body>
       <p metal:define-macro="hello">
@@ -193,6 +199,7 @@ by macro user content:
     >>> template = TALTemplate(filename=zpt_file)
 
     >>> print template.render(view, **{'load': load})
+    ... #doctest: +NORMALIZE_WHITESPACE
     <html>
     <body>
       <p>
@@ -218,6 +225,7 @@ Text templates are supported. We have a template that looks like so:
 
     >>> hunter = os.path.join(template_dir, 'hunter.txt')
     >>> print open(hunter, 'rb').read()
+    ... #doctest: +NORMALIZE_WHITESPACE
     ME GROK HUNT ${animal}!
 
 If we render it, all expressions are substituted:
@@ -225,6 +233,7 @@ If we render it, all expressions are substituted:
     >>> from dolmen.template.components import TALTemplate
     >>> template = TALTemplate(hunter, mode = 'text')
     >>> print template.render(view, **{'animal': u"MAMMOTH"})
+    ... #doctest: +NORMALIZE_WHITESPACE
     ME GROK HUNT MAMMOTH!
 
 
