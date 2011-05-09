@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Tales registry
+
 def list_tales():
+    """Tales registry
+    """
     from pkg_resources import iter_entry_points
     extra_tales = {}
     for ept in iter_entry_points(group='chameleon.tales'):

@@ -1,0 +1,2 @@
+recursive-include src/dolmen/template *.py *.txt *.zpt
+recursive-include docs *.txt

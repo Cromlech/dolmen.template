@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 from dolmen.template import extra_tales
 from cromlech.browser import ITemplate
 from zope.interface import implements
