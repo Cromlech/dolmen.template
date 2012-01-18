@@ -180,7 +180,7 @@ where ``<macro-name>`` must be an existing macro name.
         Fill this
       </div>
     <BLANKLINE>
-      <div metal:use-macro="load(filename='macromaster.zpt').macros['hello']">
+      <div metal:use-macro="load('macromaster.zpt').macros['hello']">
         <b metal:fill-slot="name">user slot</b>
         Fill this too
       </div>

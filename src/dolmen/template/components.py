@@ -29,9 +29,9 @@ class Template(object):
     def macros(self):
         return self._template.macros
 
-    def namespace(self, view):
+    def namespace(self, component):
         namespace = {'template': self}
-        namespace.update(view.namespace())
+        namespace.update(component.namespace())
         return namespace
 
 
@@ -65,27 +65,21 @@ class TALTemplate(Template):
         self._template = build_template(
             factories[self.mode], path, self.expression_types)
 
-    def namespace(self, view):
+    def namespace(self, component):
         """Extend namespace.
 
         Beside the vars defined in standard grok templates, we inject
         some vars and functions to be more compatible with official
         ZPTs.
         """
-        namespace = super(TALTemplate, self).namespace(view)
+        namespace = super(TALTemplate, self).namespace(component)
         namespace.update(dict(template=self, nothing=None))
         return namespace
 
-    def render(self, view, **extra):
+    def render(self, component, **extra):
         if extra:
             namespace = {}
-            namespace.update(self.namespace(view))
+            namespace.update(self.namespace(component))
             namespace.update(extra)
             return self._template.render(**namespace)
-        return self._template.render(**self.namespace(view))
-
-
-# TODO : we can have a @template decorateur to declare a template for a view
-# template(template = ITemplate, request= IRequest, context=Interface)
-# which does the same as @adapter(context, request) + @implementer(template) )
-# eg. in dolmen.menu.components
+        return self._template.render(**self.namespace(component))

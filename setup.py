@@ -3,13 +3,13 @@
 import os
 from setuptools import setup, find_packages
 
-version = "0.1a1"
+version = "0.1"
 
 install_requires = [
     'setuptools',
     'cromlech.browser',
     'zope.interface',
-    'Chameleon>=2.0rc7',
+    'Chameleon >= 2.7',
     ]
 
 tests_require = [

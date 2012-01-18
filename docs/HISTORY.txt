@@ -1,6 +1,16 @@
 CHANGES
 =======
 
+0.1 (2012-01-18)
+----------------
+
+- Changed the name of the `view` argument to `component`, like in the
+  protype from `cromlech.browser`. This avoid problems when providing
+  keywords argument for views.
+
+- Updated to the latest ``Chameleon`` release (2.7+).
+
+
 0.1a1 (2011-05-09)
 ------------------
 
