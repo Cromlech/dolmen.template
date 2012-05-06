@@ -1,8 +1,8 @@
 <html>
   <body>
     <span tal:define="foo 'a FOO'">
-      <span tal:replace="structure view.__class__.__name__" />
-      My context is: ${context.__class__}
+      <span tal:replace="structure component.__class__.__name__" />
+      My context is: ${component.context.__class__}
       ${foo}
       <span tal:replace="foo" />
     </span>

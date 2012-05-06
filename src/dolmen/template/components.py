@@ -29,9 +29,9 @@ class Template(object):
     def macros(self):
         return self._template.macros
 
-    def namespace(self, component):
-        namespace = {'template': self}
-        namespace.update(component.namespace())
+    def namespace(self, **extra):
+        namespace = dict(template=self, nothing=None)
+        namespace.update(extra)
         return namespace
 
 
@@ -65,21 +65,8 @@ class TALTemplate(Template):
         self._template = build_template(
             factories[self.mode], path, self.expression_types)
 
-    def namespace(self, component):
-        """Extend namespace.
-
-        Beside the vars defined in standard grok templates, we inject
-        some vars and functions to be more compatible with official
-        ZPTs.
-        """
-        namespace = super(TALTemplate, self).namespace(component)
-        namespace.update(dict(template=self, nothing=None))
-        return namespace
-
-    def render(self, component, **extra):
-        if extra:
-            namespace = {}
-            namespace.update(self.namespace(component))
-            namespace.update(extra)
-            return self._template.render(**namespace)
-        return self._template.render(**self.namespace(component))
+    def render(self, component, target_language=None, **namespace):
+        namespace['component'] = component
+        namespace['target_language'] = target_language
+        define = self.namespace(**namespace)
+        return self._template.render(**define)

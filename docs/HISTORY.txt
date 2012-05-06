@@ -1,6 +1,17 @@
 CHANGES
 =======
 
+0.2 (2012-05-06)
+----------------
+
+- The `render` method of the Template is now conform to the new prototype
+  declared in ``cromlech.browser``. The Template no long relies on a
+  namespace method on the component rendered, but it takes keyword
+  arguments in `render` with the values to push in the namespace.
+
+- The namespace variable 'view' has been renamed 'component'.
+
+
 0.1 (2012-01-18)
 ----------------
 

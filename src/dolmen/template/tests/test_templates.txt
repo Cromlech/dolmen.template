@@ -22,6 +22,7 @@ See the `Chameleon`_ page for more information.
 
 .. _Chameleon: http://chameleon.repoze.org/docs/latest/zpt.html
 
+
 Prerequisites
 -------------
 
@@ -43,12 +44,9 @@ info::
     >>> manfred.__name__ = "manfred"
 
     >>> class View(object):
+    ...
     ...     def __init__(self, context):
     ...         self.context = context
-    ...
-    ...     def namespace(self):
-    ...         return {'view': self,
-    ...                 'context': self.context}
 
     >>> view = View(manfred)
 
@@ -74,9 +72,14 @@ We prepared a plain cavepainting view. The template looks like this:
       </body>
     </html>
 
-The rendered view looks like this:
+The template object is a valid `ITemplate`:
 
     >>> template = TALTemplate(filename=cavepainting_zpt)
+    >>> from zope.interface.verify import verifyObject
+    >>> verifyObject(ITemplate, template)
+    True
+
+The rendered view looks like this:
 
     >>> print template.render(view)
     ... #doctest: +NORMALIZE_WHITESPACE
@@ -90,8 +93,14 @@ The rendered view looks like this:
 Substituting variables
 ----------------------
 
-A template can access variables like ``view``, ``context`` and its
-methods and attributes. The ``food`` view does exactly this. The
+A template can access variables defined in its namespace. The namespace
+is built upon the `render` call. A variable in the namespace can be 
+accessed freely (methods and attributes). By default, the namespace of
+the template contains `target_language` and `component`. The value of
+the `component` variable is set to the compponent passed as first arg
+to the render method.
+
+The ``food`` view demonstrates how to use variable. The raw
 template looks like this:
 
     >>> food_zpt = os.path.join(template_dir, 'food.zpt')
@@ -100,8 +109,8 @@ template looks like this:
     <html>
       <body>
         <span tal:define="foo 'a FOO'">
-          <span tal:replace="structure view.__class__.__name__" />
-          My context is: ${context.__class__}
+          <span tal:replace="structure component.__class__.__name__" />
+          My context is: ${component.context.__class__}
           ${foo}
           <span tal:replace="foo" />
         </span>
@@ -131,7 +140,7 @@ Inline Templates
 We can also define inline templates like this::
 
   >>> inline = TALTemplate(string=
-  ...       "<html><body>ME GROK HAS INLINES! ${view.__class__.__name__}"
+  ...       "<html><body>ME GROK HAS INLINES! ${component.__class__.__name__}"
   ...       "</body></html>")
 
 If we render this view we get:
@@ -241,9 +250,4 @@ Differences from regular Zope page templates
 --------------------------------------------
 
 * Macros are referenced differently. See appropriate section above.
-
-* Expressions are parsed in ``Python-mode`` by default. This means,
-  instead of ``tal:content="view/value"`` you must use
-  ``tal:content="view.value"``. Every occurence of TAL-expressions
-  starting with ``python:`` now can be shortened by skipping this
-  marker.
+* The TALES by default is `python:`.
