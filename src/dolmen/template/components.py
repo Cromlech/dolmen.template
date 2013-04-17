@@ -5,7 +5,6 @@ from dolmen.template import extra_tales
 from cromlech.browser import ITemplate
 from zope.interface import implements
 from chameleon.zpt import template
-from zope.i18n import translate
 
 
 class Template(object):
@@ -69,6 +68,5 @@ class TALTemplate(Template):
     def render(self, component, target_language=None, **namespace):
         namespace['component'] = component
         namespace['target_language'] = target_language
-        namespace['translate'] = translate
         define = self.namespace(**namespace)
         return self._template.render(**define)
