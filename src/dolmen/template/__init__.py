@@ -16,7 +16,6 @@ def list_tales():
 extra_tales = list_tales()
 
 # Exposing public API
-from cromlech.browser.interfaces import ITemplate
 from dolmen.template.components import Template, TALTemplate
 
-__all__ = ['ITemplate', 'Template', 'TALTemplate', 'extra_tales']
+__all__ = ['Template', 'TALTemplate', 'extra_tales']

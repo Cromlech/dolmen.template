@@ -56,10 +56,6 @@ Simple templates
 TALTemplate offers a base implementation for templates.
 
     >>> from dolmen.template.components import TALTemplate
-    >>> from cromlech.browser import ITemplate
-    >>> from zope.interface.verify import verifyClass 
-    >>> verifyClass(ITemplate, TALTemplate)
-    True
 
 We prepared a plain cavepainting view. The template looks like this:
 
@@ -72,12 +68,7 @@ We prepared a plain cavepainting view. The template looks like this:
       </body>
     </html>
 
-The template object is a valid `ITemplate`:
-
     >>> template = TALTemplate(filename=cavepainting_zpt)
-    >>> from zope.interface.verify import verifyObject
-    >>> verifyObject(ITemplate, template)
-    True
 
 The rendered view looks like this:
 

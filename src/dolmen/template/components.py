@@ -2,7 +2,6 @@
 
 import os
 from dolmen.template import extra_tales
-from cromlech.browser import ITemplate
 from zope.interface import implements
 from chameleon.zpt import template
 
@@ -44,8 +43,6 @@ def build_template(factory, arg, tales):
 
 class TALTemplate(Template):
 
-    implements(ITemplate)
-
     expression_types = extra_tales
 
     def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
@@ -70,3 +67,12 @@ class TALTemplate(Template):
         namespace['target_language'] = target_language
         define = self.namespace(**namespace)
         return self._template.render(**define)
+
+    
+try:
+    from cromlech.browser import ITemplate
+except ImportError:
+    pass
+else:
+    from zope.interface import classImplements
+    classImplements(TalTemplate, ITemplate)
