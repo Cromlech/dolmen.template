@@ -75,4 +75,4 @@ except ImportError:
     pass
 else:
     from zope.interface import classImplements
-    classImplements(TalTemplate, ITemplate)
+    classImplements(TALTemplate, ITemplate)
