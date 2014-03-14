@@ -16,6 +16,6 @@ def list_tales():
 extra_tales = list_tales()
 
 # Exposing public API
-from dolmen.template.components import Template, TALTemplate
+from dolmen.template.components import Template, TALTemplate, ITemplate
 
 __all__ = ['Template', 'TALTemplate', 'extra_tales']
