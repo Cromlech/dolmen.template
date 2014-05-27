@@ -1,6 +1,13 @@
 CHANGES
 =======
 
+0.3.3 (2014-05-27)
+------------------
+
+- Added a conditional use of `zope.i18n.translate` as default `translate`
+  method in the ``TALTemplate`` class.
+
+
 0.3.2 (2014-03-14)
 ------------------
 

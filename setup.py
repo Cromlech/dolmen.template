@@ -3,7 +3,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = "0.3.2"
+version = "0.3.3"
 
 install_requires = [
     'Chameleon >= 2.7',
@@ -15,6 +15,11 @@ with_cromlech = [
    'cromlech.browser >= 0.5',
    ]
 
+zope_translate = [
+   'zope.i18n',
+   ]
+
+    
 setup(
     name='dolmen.template',
     version=version,
@@ -39,6 +44,7 @@ setup(
     zip_safe=False,
     install_requires=install_requires,
     extras_require={
-        'cromlech': with_cromlech
+        'cromlech': with_cromlech,
+        'translate': zope_translate,
         },
     )

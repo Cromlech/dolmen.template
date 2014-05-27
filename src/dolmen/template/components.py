@@ -5,6 +5,11 @@ from dolmen.template import extra_tales
 from zope.interface import implements
 from chameleon.zpt import template
 
+try:
+    from zope.i18n import translate
+except ImportError:
+    translate = None
+    
 
 class Template(object):
     """Base class for any sort of page template
@@ -66,6 +71,10 @@ class TALTemplate(Template):
         namespace['component'] = component
         namespace['target_language'] = target_language
         define = self.namespace(**namespace)
+
+        if not 'translate' in define and translate is not None:
+            define['translate'] = translate
+
         return self._template.render(**define)
 
     
