@@ -4,27 +4,38 @@ import os
 from dolmen.template import extra_tales
 from zope.interface import implements
 from chameleon.zpt import template
+from chameleon.zpt.loader import TemplateLoader
+from chameleon.loader import TemplateLoader as BaseLoader
 
 try:
     from zope.i18n import translate
 except ImportError:
     translate = None
-    
+
+
+def get_expression_types(factory):
+    types = {}
+    types.update(extra_tales)
+    types.update(factory.expression_types)
+    return types
+
 
 class Template(object):
     """Base class for any sort of page template
     """
+    mode = "file"
 
-    def __init__(self, filename=None, string=None, _prefix=''):
+    formats = {
+        "file": template.PageTextTemplateFile,
+        "inline": template.PageTextTemplate,
+    }
 
-        if not (string is None) ^ (filename is None):
-            raise AssertionError(
-                "You must pass in template or filename, but not both.")
-
-        if string:
-            self.setFromString(string)
-        else:
-            self.setFromFilename(filename, _prefix)
+    def __init__(self, body, **kws):
+        self.mode = kws.pop('mode', self.mode)
+        factory = self.formats.get(self.mode)
+        if not 'expression_types' in kws:
+            kws['expression_types'] = get_expression_types(factory)
+        self._template = factory(body, **kws)
 
     def __repr__(self):
         return '<Template %r>' % self.__class__.__name__
@@ -38,34 +49,11 @@ class Template(object):
         namespace.update(extra)
         return namespace
 
-
-def build_template(factory, arg, tales):
-    types = {}
-    types.update(tales)
-    types.update(factory.expression_types)
-    return factory(arg, **{'expression_types': types})
-
-
-class TALTemplate(Template):
-
-    expression_types = extra_tales
-
-    def __init__(self, filename=None, string=None, _prefix='', mode='xml'):
-        self.mode = mode
-        Template.__init__(self, filename, string, _prefix)
-
-    def setFromString(self, string):
-        factories = {'xml': template.PageTemplate,
-                    'text': template.PageTextTemplate}
-        self._template = build_template(
-            factories[self.mode], string, self.expression_types)
-
-    def setFromFilename(self, filename, _prefix=''):
-        factories = {'xml': template.PageTemplateFile,
-                    'text': template.PageTextTemplateFile}
-        path = os.path.join(_prefix, filename)
-        self._template = build_template(
-            factories[self.mode], path, self.expression_types)
+    @classmethod
+    def loader(cls, path):
+        loader = BaseLoader(search_path=path)
+        load = loader.bind(cls)
+        return load
 
     def render(self, component, target_language=None, **namespace):
         namespace['component'] = component
@@ -76,8 +64,16 @@ class TALTemplate(Template):
             define['translate'] = translate
 
         return self._template.render(**define)
-
     
+
+class TALTemplate(Template):
+
+    formats = {
+        "file": template.PageTemplateFile,
+        "inline": template.PageTemplate,
+    }
+
+
 try:
     from cromlech.browser import ITemplate
 except ImportError:

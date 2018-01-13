@@ -60,19 +60,19 @@ TALTemplate offers a base implementation for templates.
 We prepared a plain cavepainting view. The template looks like this:
 
     >>> cavepainting_zpt = os.path.join(template_dir, 'cavepainting.zpt')
-    >>> print open(cavepainting_zpt, 'rb').read()
-    ... #doctest: +NORMALIZE_WHITESPACE
+    >>> print(open(cavepainting_zpt, 'r').read())
+    ... # doctest: +NORMALIZE_WHITESPACE
     <html>
       <body>
         A cave painting.
       </body>
     </html>
 
-    >>> template = TALTemplate(filename=cavepainting_zpt)
+    >>> template = TALTemplate(cavepainting_zpt)
 
 The rendered view looks like this:
 
-    >>> print template.render(view)
+    >>> print(template.render(view))
     ... #doctest: +NORMALIZE_WHITESPACE
     <html>
       <body>
@@ -95,7 +95,7 @@ The ``food`` view demonstrates how to use variable. The raw
 template looks like this:
 
     >>> food_zpt = os.path.join(template_dir, 'food.zpt')
-    >>> print open(food_zpt, 'rb').read()
+    >>> print(open(food_zpt, 'r').read())
     ... #doctest: +NORMALIZE_WHITESPACE
     <html>
       <body>
@@ -110,8 +110,8 @@ template looks like this:
 
 The rendered view looks like this:
 
-    >>> template = TALTemplate(filename=food_zpt)
-    >>> print template.render(view)
+    >>> template = TALTemplate(food_zpt)
+    >>> print(template.render(view))
     ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
     <html>
       <body>
@@ -130,13 +130,13 @@ Inline Templates
 
 We can also define inline templates like this::
 
-  >>> inline = TALTemplate(string=
+  >>> inline = TALTemplate(
   ...       "<html><body>ME GROK HAS INLINES! ${component.__class__.__name__}"
-  ...       "</body></html>")
+  ...       "</body></html>", mode='inline')
 
 If we render this view we get:
 
-   >>> print inline.render(view)
+   >>> print(inline.render(view))
    <html><body>ME GROK HAS INLINES! View</body></html>
 
 
@@ -149,7 +149,7 @@ different from regular Zope page templates.
 We can define macros like this:
 
     >>> zpt_file = os.path.join(template_dir, 'macromaster.zpt')
-    >>> print open(zpt_file, 'rb').read()
+    >>> print(open(zpt_file, 'r').read())
     ... #doctest: +NORMALIZE_WHITESPACE
     <p xmlns:metal="http://xml.zope.org/namespaces/metal"
        metal:define-macro="hello">
@@ -169,7 +169,7 @@ you can use something like::
 where ``<macro-name>`` must be an existing macro name.
 
     >>> zpt_file = os.path.join(template_dir, 'macrouser.zpt')
-    >>> print open(zpt_file, 'rb').read()
+    >>> print(open(zpt_file, 'r').read())
     ... #doctest: +NORMALIZE_WHITESPACE
     <html xmlns:metal="http://xml.zope.org/namespaces/metal">
     <body>
@@ -190,15 +190,10 @@ where ``<macro-name>`` must be an existing macro name.
 When rendered also the slot defined in the master template is filled
 by macro user content:
 
-    >>> from chameleon.loader import TemplateLoader
-    >>> from dolmen.template.components import TALTemplate
-    >>> loader = TemplateLoader(template_dir)
-    >>> load = loader.bind(TALTemplate)
+    >>> load = TALTemplate.loader(template_dir)
+    >>> template = load('macrouser.zpt')
 
-    >>> zpt_file = os.path.join(template_dir, 'macrouser.zpt')
-    >>> template = TALTemplate(filename=zpt_file)
-
-    >>> print template.render(view, **{'load': load})
+    >>> print(template.render(view, **{'load': load}))
     ... #doctest: +NORMALIZE_WHITESPACE
     <html>
     <body>
@@ -224,17 +219,16 @@ Text templates
 Text templates are supported. We have a template that looks like so:
 
     >>> hunter = os.path.join(template_dir, 'hunter.txt')
-    >>> print open(hunter, 'rb').read()
+    >>> print(open(hunter, 'r').read())
     ... #doctest: +NORMALIZE_WHITESPACE
     ME GROK HUNT ${animal}!
 
 If we render it, all expressions are substituted:
 
-    >>> from dolmen.template.components import TALTemplate
-    >>> template = TALTemplate(hunter, mode = 'text')
-    >>> print template.render(view, **{'animal': u"MAMMOTH"})
-    ... #doctest: +NORMALIZE_WHITESPACE
-    ME GROK HUNT MAMMOTH!
+    >>> from dolmen.template.components import Template
+    >>> template = Template(hunter)
+    >>> template.render(view, **{'animal': u"MAMMOTH"})
+    b'ME GROK HUNT MAMMOTH!\n'
 
 
 Differences from regular Zope page templates
