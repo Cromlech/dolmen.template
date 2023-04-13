@@ -2,7 +2,6 @@
 
 import os
 from dolmen.template import extra_tales
-from zope.interface import implements
 from chameleon.zpt import template
 from chameleon.zpt.loader import TemplateLoader
 from chameleon.loader import TemplateLoader as BaseLoader
